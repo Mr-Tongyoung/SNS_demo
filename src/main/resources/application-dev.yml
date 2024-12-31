@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: SNS_demo
+  datasource:
+    url: jdbc:postgresql://localhost:5432/SNS_DB
+    username: postgres
+    password: rlawns1199!
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
