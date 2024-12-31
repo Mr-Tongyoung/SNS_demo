@@ -29,6 +29,8 @@ public enum ErrorCode {
 
   NICKNAME_ALREADY_EXISTS(HttpStatus.INTERNAL_SERVER_ERROR, "이미 존재하는 닉네임입니다"),
 
+  PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다."),
+
   // Comment
   COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
 

@@ -7,6 +7,7 @@ import com.example.junho.sns_demo.domain.user.repository.UserRepository;
 import com.example.junho.sns_demo.global.exception.CustomException;
 import com.example.junho.sns_demo.global.exception.ErrorCode;
 import lombok.Builder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,16 +15,32 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final PasswordEncoder bCryptPasswordEncoder;
 
+  // 회원가입
   public UserResponseDto registerUser(UserRequestDto userRequestDto) {
 
     checkDuplication(userRequestDto);
 
     User user = userRequestDto.toEntity();
+    String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+    user.setPassword(encodedPassword); // 비밀번호 해싱
 
-    User savedUser = userRepository.save(user);
+    return userRepository.save(user).toResponseDto();
+  }
 
-    return savedUser.toResponseDto();
+  // 로그인
+  public UserResponseDto loginUser(String loginId, String password) {
+    // 로그인 ID로 사용자 조회
+    User user = userRepository.findByLoginId(loginId)
+        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 비밀번호 검증
+    if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+      throw new CustomException(ErrorCode.PASSWORD_INCORRECT);
+    }
+
+    return user.toResponseDto();
   }
 
   private void checkDuplication(UserRequestDto userRequestDto) {
@@ -36,4 +53,6 @@ public class UserService {
     if(userRepository.existsByEmail(userRequestDto.email()))
       throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
   }
+
+
 }
