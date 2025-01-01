@@ -16,14 +16,14 @@ public record UserRequestDto(
 ) {
   public User toEntity() {
     return User.builder()
-        .name(this.name())
-        .loginId(this.loginId())
-        .password(this.password())
-        .birthday(this.birthday())
-        .nickname(this.nickname())
-        .gender(this.gender())
-        .phone(this.phone())
-        .email(this.email())
+        .name(name)
+        .loginId(loginId)
+        .password(password)
+        .birthday(birthday)
+        .nickname(nickname)
+        .gender(gender)
+        .phone(phone)
+        .email(email)
         .build();
   }
 }
