@@ -33,7 +33,7 @@ public class UserService {
   public UserResponseDto loginUser(String loginId, String password) {
     // 로그인 ID로 사용자 조회
     User user = userRepository.findByLoginId(loginId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
     // 비밀번호 검증
     if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {

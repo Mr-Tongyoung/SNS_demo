@@ -16,8 +16,8 @@ public enum ErrorCode {
   ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
 
 
-  // Member
-  MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),
+  // USER
+  USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),
 
   LOGIN_ID_ALREADY_EXISTS(HttpStatus.INTERNAL_SERVER_ERROR, "이미 존재하는 아이디입니다"),
 
@@ -28,6 +28,13 @@ public enum ErrorCode {
   NICKNAME_ALREADY_EXISTS(HttpStatus.INTERNAL_SERVER_ERROR, "이미 존재하는 닉네임입니다"),
 
   PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다."),
+
+  // Follow
+  CANNOT_FOLLOW_MYSELF(HttpStatus.BAD_REQUEST, "자신은 팔로우 할 수 없습니다."),
+
+  ALREADY_FOLLOWING(HttpStatus.BAD_REQUEST, "이미 팔로우 하고 있습니다."),
+
+  NO_SUCH_FOLLOWERSHIP(HttpStatus.BAD_REQUEST, "팔로우 관계가 없습니다."),
 
   //Post
   POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),

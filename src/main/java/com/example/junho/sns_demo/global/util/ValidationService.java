@@ -21,7 +21,7 @@ public class ValidationService {
 
   public User validateUser(Long userId) {
     return userRepository.findById(userId)
-        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
   }
 
   public Post validatePost(Long postId) {

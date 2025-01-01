@@ -58,6 +58,13 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   String email;
 
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Follow> following = new ArrayList<>();
+
+  @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Follow> followers = new ArrayList<>();
+
+
   public UserResponseDto toResponseDto() {
     return new UserResponseDto(
         this.id,

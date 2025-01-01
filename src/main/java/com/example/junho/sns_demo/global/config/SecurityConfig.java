@@ -29,7 +29,8 @@ public class SecurityConfig {
                 "/actuator/**",
                 "/user/**",
                 "/post/**",
-                "/comment/**"
+                "/comment/**",
+                "/follow/**"
             ).permitAll() // Swagger 및 관련 리소스 허용
             .anyRequest().authenticated() // 나머지 요청은 인증 필요
         );
