@@ -45,7 +45,8 @@ public class Post extends BaseTimeEntity {
         this.title,
         this.content,
         this.user.getName(),
-        this.user.getId()
+        this.user.getId(),
+        this.getCreatedAt()
     );
   }
 
