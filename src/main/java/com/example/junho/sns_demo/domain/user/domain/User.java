@@ -1,15 +1,20 @@
 package com.example.junho.sns_demo.domain.user.domain;
 
+import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.domain.user.dto.UserResponseDto;
 import com.example.junho.sns_demo.global.util.BaseTimeEntity;
 import com.example.junho.sns_demo.global.util.Gender;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

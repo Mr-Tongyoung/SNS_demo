@@ -15,8 +15,6 @@ public enum ErrorCode {
 
   ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
 
-  POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
-
 
   // Member
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),
@@ -30,6 +28,11 @@ public enum ErrorCode {
   NICKNAME_ALREADY_EXISTS(HttpStatus.INTERNAL_SERVER_ERROR, "이미 존재하는 닉네임입니다"),
 
   PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다."),
+
+  //Post
+  POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
+
+  POST_NOT_OWNED_BY_USER(HttpStatus.FORBIDDEN, "게시글의 작성자가 아닙니다."),
 
   // Comment
   COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
