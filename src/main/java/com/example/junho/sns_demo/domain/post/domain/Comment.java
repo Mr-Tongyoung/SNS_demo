@@ -1,5 +1,6 @@
 package com.example.junho.sns_demo.domain.post.domain;
 
+import com.example.junho.sns_demo.domain.post.dto.CommentResponseDto;
 import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.global.util.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +23,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "comment")
 public class Comment extends BaseTimeEntity {
 
   @Id
@@ -37,5 +40,13 @@ public class Comment extends BaseTimeEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false) // 댓글 작성자 ID 참조
   private User user;
+
+  public CommentResponseDto toResponseDto() {
+    return new CommentResponseDto(
+        this.content,
+        this.user.getName(),
+        this.getCreatedAt()
+    );
+  }
 }
 
