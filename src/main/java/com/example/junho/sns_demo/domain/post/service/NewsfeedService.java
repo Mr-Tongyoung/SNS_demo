@@ -7,10 +7,11 @@ import com.example.junho.sns_demo.domain.user.repository.FollowRepository;
 import com.example.junho.sns_demo.domain.user.repository.UserRepository;
 import java.util.List;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@Builder
+@RequiredArgsConstructor
 public class NewsfeedService {
 
   private final PostRepository postRepository;

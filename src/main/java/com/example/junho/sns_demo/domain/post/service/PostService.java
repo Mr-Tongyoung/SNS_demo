@@ -14,10 +14,11 @@ import com.example.junho.sns_demo.global.exception.ErrorCode;
 import com.example.junho.sns_demo.global.util.ValidationService;
 import java.util.List;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@Builder
+@RequiredArgsConstructor
 public class PostService {
 
   private final ValidationService validationService;

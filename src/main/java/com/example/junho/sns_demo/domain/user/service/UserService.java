@@ -7,11 +7,12 @@ import com.example.junho.sns_demo.domain.user.repository.UserRepository;
 import com.example.junho.sns_demo.global.exception.CustomException;
 import com.example.junho.sns_demo.global.exception.ErrorCode;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@Builder
+@RequiredArgsConstructor
 public class UserService {
 
   private final UserRepository userRepository;

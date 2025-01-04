@@ -9,10 +9,11 @@ import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.global.util.ValidationService;
 import java.util.List;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@Builder
+@RequiredArgsConstructor
 public class CommentService {
 
   private final ValidationService validationService;
