@@ -1,11 +1,26 @@
 spring:
   application:
     name: SNS_demo
+
   datasource:
     url: jdbc:postgresql://localhost:5432/SNS_DB
     username: postgres
     password: rlawns1199!
+
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
+  jwt:
+    expiration_time: 86400000 #1?
+    secret: ${JWT_SECRET_TOKEN}
+
+cloud:
+  aws:
+    s3:
+      bucket: mysns-demo-bucket
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
