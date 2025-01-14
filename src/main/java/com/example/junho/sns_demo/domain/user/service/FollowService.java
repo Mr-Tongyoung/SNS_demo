@@ -7,6 +7,7 @@ import com.example.junho.sns_demo.domain.user.repository.UserRepository;
 import com.example.junho.sns_demo.global.exception.CustomException;
 import com.example.junho.sns_demo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,12 +23,12 @@ public class FollowService {
     User following = userRepository.findById(followingId)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-    if (followRepository.existsByFollowerAndFollowing(follower, following)) {
+    try {
+      Follow follow = Follow.of(follower, following);
+      followRepository.save(follow);
+    } catch (DataIntegrityViolationException e) {
       throw new CustomException(ErrorCode.ALREADY_FOLLOWING);
     }
-
-    Follow follow = Follow.of(follower, following);
-    followRepository.save(follow);
   }
 
   public void unfollow(Long followerId, Long followingId) {

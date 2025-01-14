@@ -44,7 +44,10 @@ public enum ErrorCode {
   // Comment
   COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
 
-  COMMENT_NOT_OWNED_BY_USER(HttpStatus.FORBIDDEN, "댓글의 작성자가 아닙니다.");
+  COMMENT_NOT_OWNED_BY_USER(HttpStatus.FORBIDDEN, "댓글의 작성자가 아닙니다."),
+
+  //S3
+  FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload media file");
 
   private final HttpStatus status;
   private final String message;

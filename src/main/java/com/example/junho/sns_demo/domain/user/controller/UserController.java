@@ -1,6 +1,6 @@
 package com.example.junho.sns_demo.domain.user.controller;
 
-import com.example.junho.sns_demo.domain.user.dto.UserRequestDto;
+import com.example.junho.sns_demo.domain.user.dto.UserRegisterDto;
 import com.example.junho.sns_demo.domain.user.dto.UserResponseDto;
 import com.example.junho.sns_demo.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +18,10 @@ public class UserController {
 
   private final UserService userService;
 
-  @PostMapping
-  public ResponseEntity<UserResponseDto> signUp(
-      @RequestBody UserRequestDto requestDto) {
-    UserResponseDto responseDto = userService.registerUser(requestDto);
-    return ResponseEntity.ok(responseDto);
-  }
-
-  @PostMapping("/login")
-  public ResponseEntity<UserResponseDto> login(
-      @RequestParam("username") String username, @RequestParam("password") String password) {
-    UserResponseDto responseDto = userService.loginUser(username, password);
+  @PostMapping("/register")
+  public ResponseEntity<UserResponseDto> register(
+      @RequestBody UserRegisterDto registerDto) {
+    UserResponseDto responseDto = userService.registerUser(registerDto);
     return ResponseEntity.ok(responseDto);
   }
 }

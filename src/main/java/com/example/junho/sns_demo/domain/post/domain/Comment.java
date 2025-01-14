@@ -44,7 +44,7 @@ public class Comment extends BaseTimeEntity {
   public CommentResponseDto toResponseDto() {
     return new CommentResponseDto(
         this.content,
-        this.user.getName(),
+        this.user.getUsername(),
         this.getCreatedAt()
     );
   }
