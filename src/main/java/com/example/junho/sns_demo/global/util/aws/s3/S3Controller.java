@@ -1,4 +1,4 @@
-package com.example.junho.sns_demo.global.util.aws;
+package com.example.junho.sns_demo.global.util.aws.s3;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

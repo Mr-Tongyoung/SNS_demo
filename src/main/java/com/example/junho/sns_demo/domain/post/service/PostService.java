@@ -1,5 +1,7 @@
 package com.example.junho.sns_demo.domain.post.service;
 
+import com.example.junho.sns_demo.domain.elasticSearch.ElasticRepository;
+import com.example.junho.sns_demo.domain.elasticSearch.PostDocument;
 import com.example.junho.sns_demo.domain.post.domain.Comment;
 import com.example.junho.sns_demo.domain.post.domain.MediaFile;
 import com.example.junho.sns_demo.domain.post.domain.Post;
@@ -12,9 +14,11 @@ import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.domain.user.repository.UserRepository;
 import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
 import com.example.junho.sns_demo.domain.newsFeed.service.NewsfeedUpdateService;
-import com.example.junho.sns_demo.global.util.aws.S3Service;
+import com.example.junho.sns_demo.global.util.aws.s3.S3Service;
 import com.example.junho.sns_demo.global.util.ValidationService;
+import com.example.junho.sns_demo.global.util.aws.sqs.SqsMessageSender;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostService {
 
   private final ValidationService validationService;
@@ -31,8 +36,9 @@ public class PostService {
   private final MediaFileRepository mediaFileRepository;
   private final CommentRepository commentRepository;
   private final UserRepository userRepository;
+  private final ElasticRepository elasticRepository;
   private final S3Service s3Service;
-  private final NewsfeedUpdateService newsfeedUpdateService;
+  private final SqsMessageSender sqsMessageSender;
 
   @Transactional
   public PostResponseDto createPost(PostRequestDto postRequestDto,
@@ -64,10 +70,21 @@ public class PostService {
       }
     }
 
+    // Elasticsearch에 저장
+    PostDocument postDocument = new PostDocument();
+    postDocument.setId(post.getId());
+    postDocument.setUserId(user.getId());
+    postDocument.setContent(post.getContent());
+    postDocument.setLikeCount(post.getLikes());
+    postDocument.setCreatedAt(OffsetDateTime.now()); // Convert to UTC Instant
+    postDocument.setUpdatedAt(OffsetDateTime.now()); // Convert to UTC Instant
+
+    elasticRepository.save(postDocument);
+
     savedPost = postRepository.save(savedPost);
 
-    // 팔로워 캐시 업데이트
-    newsfeedUpdateService.updateFollowerCaches(user.getId(), savedPost.getId());
+    // SQS에 메시지 전송
+    sqsMessageSender.sendMessage(savedPost.getId().toString());
 
     return savedPost.toResponseDto();
   }
@@ -153,5 +170,9 @@ public class PostService {
     }
 
     return postRepository.save(post);
+  }
+
+  public List<PostDocument> searchPostsByKeyword(String keyword) {
+    return elasticRepository.findByContentContaining(keyword);
   }
 }

@@ -46,9 +46,15 @@ dependencies {
     // AWS S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    // AWS SQS
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.1")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.0.0'
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // ElasticSearch
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 }
 
 tasks.named('test') {

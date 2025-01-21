@@ -1,5 +1,6 @@
 package com.example.junho.sns_demo.domain.post.controller;
 
+import com.example.junho.sns_demo.domain.elasticSearch.PostDocument;
 import com.example.junho.sns_demo.domain.post.dto.PostRequestDto;
 import com.example.junho.sns_demo.domain.post.dto.PostResponseDto;
 import com.example.junho.sns_demo.domain.post.service.PostService;
@@ -86,4 +87,8 @@ public class PostController {
     return ResponseEntity.ok(postService.getPost(postId));
   }
 
+  @GetMapping("/search")
+  public List<PostDocument> searchPosts(@RequestParam String keyword) {
+    return postService.searchPostsByKeyword(keyword);
+  }
 }
