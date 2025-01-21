@@ -8,9 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableElasticsearchRepositories(basePackages = "com.example.junho.sns_demo.domain.elasticSearch")
-//@EnableJpaRepositories(basePackages = "com.example.junho.sns_demo.domain")
-
 public class SnsDemoApplication {
 
   public static void main(String[] args) {

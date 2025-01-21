@@ -71,13 +71,14 @@ public class PostService {
     }
 
     // Elasticsearch에 저장
-    PostDocument postDocument = new PostDocument();
-    postDocument.setId(post.getId());
-    postDocument.setUserId(user.getId());
-    postDocument.setContent(post.getContent());
-    postDocument.setLikeCount(post.getLikes());
-    postDocument.setCreatedAt(OffsetDateTime.now()); // Convert to UTC Instant
-    postDocument.setUpdatedAt(OffsetDateTime.now()); // Convert to UTC Instant
+    PostDocument postDocument = PostDocument.builder()
+        .id(post.getId())
+        .userId(user.getId())
+        .content(post.getContent())
+        .likeCount(post.getLikes())
+        .createdAt(OffsetDateTime.now())
+        .updatedAt(OffsetDateTime.now())
+        .build();
 
     elasticRepository.save(postDocument);
 
