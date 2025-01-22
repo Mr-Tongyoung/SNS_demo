@@ -1,7 +1,7 @@
 package com.example.junho.sns_demo.domain.post.service;
 
-import com.example.junho.sns_demo.domain.elasticSearch.ElasticRepository;
-import com.example.junho.sns_demo.domain.elasticSearch.PostDocument;
+import com.example.junho.sns_demo.global.elasticSearch.ElasticRepository;
+import com.example.junho.sns_demo.global.elasticSearch.PostDocument;
 import com.example.junho.sns_demo.domain.post.domain.Comment;
 import com.example.junho.sns_demo.domain.post.domain.MediaFile;
 import com.example.junho.sns_demo.domain.post.domain.Post;
@@ -12,8 +12,9 @@ import com.example.junho.sns_demo.domain.post.repository.MediaFileRepository;
 import com.example.junho.sns_demo.domain.post.repository.PostRepository;
 import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.domain.user.repository.UserRepository;
+import com.example.junho.sns_demo.global.exception.CustomException;
+import com.example.junho.sns_demo.global.exception.ErrorCode;
 import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
-import com.example.junho.sns_demo.domain.newsFeed.service.NewsfeedUpdateService;
 import com.example.junho.sns_demo.global.util.aws.s3.S3Service;
 import com.example.junho.sns_demo.global.util.ValidationService;
 import com.example.junho.sns_demo.global.util.aws.sqs.SqsMessageSender;
@@ -44,8 +45,8 @@ public class PostService {
   public PostResponseDto createPost(PostRequestDto postRequestDto,
       List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
       throws IOException {
-    User user = userRepository.findByUsername(customUserDetails.getUsername());
-    customUserDetails.getUser().setId(user.getId());
+    User user = userRepository.findById(customUserDetails.getId())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     // 유효한 사용자 확인
     validationService.validateUser(customUserDetails.getId());
 
@@ -153,24 +154,6 @@ public class PostService {
     }
     post.like(user);
     postRepository.save(post);
-  }
-
-  @Transactional
-  public Post addMediaToPost(Long postId, List<MultipartFile> mediaFiles)
-      throws IOException {
-    Post post = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("Post not found"));
-
-    for (MultipartFile file : mediaFiles) {
-      String mediaUrl = s3Service.uploadFile(file);
-      MediaFile mediaFile = MediaFile.builder()
-          .url(mediaUrl)
-          .post(post)
-          .build();
-      post.addMediaFile(mediaFile);
-    }
-
-    return postRepository.save(post);
   }
 
   public List<PostDocument> searchPostsByKeyword(String keyword) {

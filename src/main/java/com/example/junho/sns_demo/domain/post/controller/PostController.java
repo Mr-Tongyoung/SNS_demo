@@ -1,10 +1,9 @@
 package com.example.junho.sns_demo.domain.post.controller;
 
-import com.example.junho.sns_demo.domain.elasticSearch.PostDocument;
+import com.example.junho.sns_demo.global.elasticSearch.PostDocument;
 import com.example.junho.sns_demo.domain.post.dto.PostRequestDto;
 import com.example.junho.sns_demo.domain.post.dto.PostResponseDto;
 import com.example.junho.sns_demo.domain.post.service.PostService;
-import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

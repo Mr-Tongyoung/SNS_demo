@@ -1,4 +1,4 @@
-package com.example.junho.sns_demo.domain.elasticSearch;
+package com.example.junho.sns_demo.global.elasticSearch;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
