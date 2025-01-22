@@ -18,11 +18,12 @@ public class JWTFilter extends OncePerRequestFilter {
   private final JWTUtil jwtUtil;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request,
+      HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
     //request에서 Authorization 헤더를 찾음
-    String authorization= request.getHeader("Authorization");
-
+    String authorization = request.getHeader("Authorization");
 
     // TODO: 토큰 분명히 들어가 있는데 엘라스틱 서치하면 token null 출력됨
     //Authorization 헤더 검증
@@ -50,11 +51,13 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     //토큰에서 username과 role 획득
+    Long userId = jwtUtil.getUserIdFromToken(token);
     String username = jwtUtil.getUsernameFromToken(token);
     String role = jwtUtil.getRole(token);
 
     //userEntity를 생성하여 값 set
     User user = new User();
+    user.setId(userId);
     user.setUsername(username);
     user.setPassword("temppassword");
     user.setRole(role);
@@ -63,7 +66,8 @@ public class JWTFilter extends OncePerRequestFilter {
     CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
     //스프링 시큐리티 인증 토큰 생성
-    Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+    Authentication authToken = new UsernamePasswordAuthenticationToken(
+        customUserDetails, null, customUserDetails.getAuthorities());
     //세션에 사용자 등록
     SecurityContextHolder.getContext().setAuthentication(authToken);
 
