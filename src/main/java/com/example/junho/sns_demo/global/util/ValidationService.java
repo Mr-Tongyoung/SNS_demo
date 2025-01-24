@@ -1,8 +1,8 @@
 package com.example.junho.sns_demo.global.util;
 
-import com.example.junho.sns_demo.domain.post.domain.Comment;
+import com.example.junho.sns_demo.domain.comment.domain.Comment;
 import com.example.junho.sns_demo.domain.post.domain.Post;
-import com.example.junho.sns_demo.domain.post.repository.CommentRepository;
+import com.example.junho.sns_demo.domain.comment.repository.CommentRepository;
 import com.example.junho.sns_demo.domain.post.repository.PostRepository;
 import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.domain.user.repository.UserRepository;
