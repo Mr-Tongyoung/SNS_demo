@@ -1,4 +1,4 @@
-package com.example.junho.sns_demo.domain.post.dto;
+package com.example.junho.sns_demo.domain.comment.dto;
 
 import java.time.LocalDateTime;
 

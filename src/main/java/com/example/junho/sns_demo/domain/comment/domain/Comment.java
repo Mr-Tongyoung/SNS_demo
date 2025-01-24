@@ -1,6 +1,7 @@
-package com.example.junho.sns_demo.domain.post.domain;
+package com.example.junho.sns_demo.domain.comment.domain;
 
-import com.example.junho.sns_demo.domain.post.dto.CommentResponseDto;
+import com.example.junho.sns_demo.domain.comment.dto.CommentResponseDto;
+import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.global.util.BaseTimeEntity;
 import jakarta.persistence.Column;

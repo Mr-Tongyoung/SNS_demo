@@ -1,14 +1,14 @@
-package com.example.junho.sns_demo.domain.post.service;
+package com.example.junho.sns_demo.domain.comment.service;
 
-import com.example.junho.sns_demo.domain.post.domain.Comment;
+import com.example.junho.sns_demo.domain.comment.domain.Comment;
 import com.example.junho.sns_demo.domain.post.domain.Post;
-import com.example.junho.sns_demo.domain.post.dto.CommentRequestDto;
-import com.example.junho.sns_demo.domain.post.dto.CommentResponseDto;
-import com.example.junho.sns_demo.domain.post.repository.CommentRepository;
+import com.example.junho.sns_demo.domain.comment.dto.CommentRequestDto;
+import com.example.junho.sns_demo.domain.comment.dto.CommentResponseDto;
+import com.example.junho.sns_demo.domain.comment.repository.CommentRepository;
 import com.example.junho.sns_demo.domain.user.domain.User;
+import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
 import com.example.junho.sns_demo.global.util.ValidationService;
 import java.util.List;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +19,9 @@ public class CommentService {
   private final ValidationService validationService;
   private final CommentRepository commentRepository;
 
-  public CommentResponseDto createComment(CommentRequestDto commentRequestDto) {
-    User user = validationService.validateUser(commentRequestDto.userId());
+  public CommentResponseDto createComment(CommentRequestDto commentRequestDto
+      , CustomUserDetails customUserDetails) {
+    User user = validationService.validateUser(customUserDetails.getId());
     Post post = validationService.validatePost(commentRequestDto.postId());
     Comment comment = commentRequestDto.toEntity(user, post);
 
@@ -36,9 +37,12 @@ public class CommentService {
         .toList();
   }
 
-  public CommentResponseDto updateComment(Long commentId, CommentRequestDto commentRequestDto) {
+  public CommentResponseDto updateComment(Long commentId,
+      CommentRequestDto commentRequestDto,
+      CustomUserDetails customUserDetails) {
     Comment comment = validationService.validateComment(commentId);
-    validationService.validateCommentOwnership(comment, commentRequestDto.userId());
+    validationService.validateCommentOwnership(comment,
+        customUserDetails.getId());
 
     comment.setContent(commentRequestDto.content());
     commentRepository.save(comment);
