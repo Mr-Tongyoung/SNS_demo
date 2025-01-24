@@ -3,7 +3,6 @@ package com.example.junho.sns_demo.domain.user.domain;
 import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.domain.user.dto.UserResponseDto;
 import com.example.junho.sns_demo.global.util.BaseTimeEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

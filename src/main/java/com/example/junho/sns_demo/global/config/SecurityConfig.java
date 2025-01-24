@@ -62,6 +62,7 @@ public class SecurityConfig {
                 "/api/s3/**"
             ).permitAll() // Swagger 및 관련 리소스 허용
 //            .requestMatchers("/post/create").hasRole("USER")
+                .requestMatchers("/like").hasRole("USER")
             .requestMatchers("/admin").hasRole("ADMIN")
             .anyRequest().authenticated() // 나머지 요청은 인증 필요
         );

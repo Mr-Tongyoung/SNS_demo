@@ -41,6 +41,13 @@ public enum ErrorCode {
 
   POST_NOT_OWNED_BY_USER(HttpStatus.FORBIDDEN, "게시글의 작성자가 아닙니다."),
 
+  //Like
+  NO_SUCH_LIKE(HttpStatus.BAD_REQUEST, "좋아요 관계가 없습니다."),
+
+  ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요한 게시물입니다."),
+
+  ALREADY_UNLIKED(HttpStatus.BAD_REQUEST, "이미 좋아요를 취소한 게시물입니다."),
+
   // Comment
   COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
 

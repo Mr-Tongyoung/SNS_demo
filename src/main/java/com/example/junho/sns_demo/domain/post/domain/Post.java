@@ -4,7 +4,6 @@ import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.domain.post.dto.PostResponseDto;
 import com.example.junho.sns_demo.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -38,13 +37,8 @@ public class Post extends BaseTimeEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @ManyToMany
-  @JoinTable(
-      name = "post_likes",
-      joinColumns = @JoinColumn(name = "post_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id")
-  )
-  private Set<User> likedUsers = new HashSet<>();
+  @ElementCollection
+  private Set<Long> likedUsers = new HashSet<>();
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<MediaFile> mediaFiles = new ArrayList<>();
@@ -65,10 +59,12 @@ public class Post extends BaseTimeEntity {
     );
   }
 
+  public void upLike() {
+    this.likes++;
+  }
 
-  public void like(User user) {
-    likedUsers.add(user);
-    this.likes = likedUsers.size(); // Update likes count
+  public void downLike() {
+    this.likes--;
   }
 
   public void addMediaFile(MediaFile mediaFile) {

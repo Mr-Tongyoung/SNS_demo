@@ -2,12 +2,12 @@ package com.example.junho.sns_demo.domain.post.service;
 
 import com.example.junho.sns_demo.global.elasticSearch.ElasticRepository;
 import com.example.junho.sns_demo.global.elasticSearch.PostDocument;
-import com.example.junho.sns_demo.domain.post.domain.Comment;
+import com.example.junho.sns_demo.domain.comment.domain.Comment;
 import com.example.junho.sns_demo.domain.post.domain.MediaFile;
 import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.domain.post.dto.PostRequestDto;
 import com.example.junho.sns_demo.domain.post.dto.PostResponseDto;
-import com.example.junho.sns_demo.domain.post.repository.CommentRepository;
+import com.example.junho.sns_demo.domain.comment.repository.CommentRepository;
 import com.example.junho.sns_demo.domain.post.repository.MediaFileRepository;
 import com.example.junho.sns_demo.domain.post.repository.PostRepository;
 import com.example.junho.sns_demo.domain.user.domain.User;
@@ -41,7 +41,6 @@ public class PostService {
   private final S3Service s3Service;
   private final SqsMessageSender sqsMessageSender;
 
-  @Transactional
   public PostResponseDto createPost(PostRequestDto postRequestDto,
       List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
       throws IOException {
@@ -91,7 +90,6 @@ public class PostService {
     return savedPost.toResponseDto();
   }
 
-  @Transactional
   public void createPosts(PostRequestDto postRequestDto,
       List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
       throws IOException {
@@ -142,18 +140,6 @@ public class PostService {
     commentRepository.deleteAll(comments);
 
     postRepository.delete(post);
-  }
-
-  public void addLikeToPost(Long postId, CustomUserDetails customUserDetails) {
-    User user = userRepository.findByUsername(customUserDetails.getUsername());
-    customUserDetails.getUser().setId(user.getId());
-    Post post = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("Post not found"));
-    if (post.getLikedUsers().contains(user)) {
-      throw new IllegalStateException("User already liked this post.");
-    }
-    post.like(user);
-    postRepository.save(post);
   }
 
   public List<PostDocument> searchPostsByKeyword(String keyword) {

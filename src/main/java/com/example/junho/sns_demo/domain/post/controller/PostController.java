@@ -78,13 +78,6 @@ public class PostController {
     return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/like")
-  public ResponseEntity<PostResponseDto> likePost(@RequestParam Long postId,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails){
-    postService.addLikeToPost(postId, customUserDetails);
-    return ResponseEntity.ok(postService.getPost(postId));
-  }
-
   @GetMapping("/search")
   public List<PostDocument> searchPosts(@RequestParam String keyword) {
     return postService.searchPostsByKeyword(keyword);
