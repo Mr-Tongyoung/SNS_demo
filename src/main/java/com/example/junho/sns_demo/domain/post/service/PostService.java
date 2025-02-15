@@ -46,6 +46,17 @@ public class PostService {
       throws IOException {
     User user = userRepository.findById(customUserDetails.getId())
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    if(user.isCeleb())
+      return createCelebrityUserPost(postRequestDto, mediaFiles, customUserDetails);
+    else
+      return createNormalUserPost(postRequestDto, mediaFiles, customUserDetails);
+  }
+
+  public PostResponseDto createNormalUserPost(PostRequestDto postRequestDto,
+      List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
+      throws IOException {
+    User user = userRepository.findById(customUserDetails.getId())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     // 유효한 사용자 확인
     validationService.validateUser(customUserDetails.getId());
 
@@ -90,11 +101,63 @@ public class PostService {
     return savedPost.toResponseDto();
   }
 
+  public PostResponseDto createCelebrityUserPost(PostRequestDto postRequestDto,
+      List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
+      throws IOException {
+    User user = userRepository.findById(customUserDetails.getId())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    // 유효한 사용자 확인
+    validationService.validateUser(customUserDetails.getId());
+
+    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
+    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
+    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
+    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
+    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
+
+    // Post 객체 생성 및 저장
+    Post post = postRequestDto.toEntity(user);
+    post.setMediaFiles(new ArrayList<>()); // mediaFiles 초기화
+    Post savedPost = postRepository.save(post); // Post 먼저 저장
+
+    // MediaFile 추가
+    if (mediaFiles != null && !mediaFiles.isEmpty()) {
+      for (MultipartFile file : mediaFiles) {
+        if (!file.isEmpty()) {
+          String mediaUrl = s3Service.uploadFile(file);
+          MediaFile mediaFile = MediaFile.builder()
+              .post(savedPost) // 저장된 Post와 연결
+              .url(mediaUrl)
+              .build();
+
+          savedPost.addMediaFile(mediaFile); // Post에 MediaFile 추가
+          mediaFileRepository.save(mediaFile); // MediaFile 명시적으로 저장
+        }
+      }
+    }
+
+    // Elasticsearch에 저장
+    PostDocument postDocument = PostDocument.builder()
+        .id(post.getId())
+        .userId(user.getId())
+        .content(post.getContent())
+        .likeCount(post.getLikes())
+        .createdAt(OffsetDateTime.now())
+        .updatedAt(OffsetDateTime.now())
+        .build();
+
+    elasticRepository.save(postDocument);
+
+    savedPost = postRepository.save(savedPost);
+
+    return savedPost.toResponseDto();
+  }
+
   public void createPosts(PostRequestDto postRequestDto,
       List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
       throws IOException {
     for (int i = 0; i < 100; i++) {
-      createPost(postRequestDto,mediaFiles,customUserDetails);
+      createNormalUserPost(postRequestDto,mediaFiles,customUserDetails);
     }
   }
 

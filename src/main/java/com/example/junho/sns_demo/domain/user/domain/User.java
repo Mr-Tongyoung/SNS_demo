@@ -4,6 +4,7 @@ import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.domain.user.dto.UserResponseDto;
 import com.example.junho.sns_demo.global.util.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,6 +39,12 @@ public class User extends BaseTimeEntity {
 
   private String role;
 
+  private int followerCount = 0;
+
+  private int followingCount = 0;
+
+  private boolean isCeleb;
+
   @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Follow> followings = new ArrayList<>();
 
@@ -48,13 +55,40 @@ public class User extends BaseTimeEntity {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts = new ArrayList<>();
 
+  public void increaseFollowerCount() {
+    this.followerCount++;
+    updateCelebrityStatus();
+  }
+
+  public void decreaseFollowerCount() {
+    this.followerCount--;
+    updateCelebrityStatus();
+  }
+
+  public void increaseFollowingCount() {
+    this.followingCount++;
+    updateCelebrityStatus();
+  }
+
+  public void decreaseFollowingCount() {
+    this.followingCount--;
+    updateCelebrityStatus();
+  }
+
+  private void updateCelebrityStatus() {
+    this.isCeleb = this.followerCount >= 5;
+  }
+
 
   public UserResponseDto toResponseDto() {
     return new UserResponseDto(
         this.id,
         this.username,
         this.email,
-        this.role
+        this.role,
+        this.followerCount,
+        this.followingCount,
+        this.isCeleb
     );
   }
 }

@@ -25,6 +25,10 @@ public class FollowService {
 
     try {
       Follow follow = Follow.of(follower, following);
+      follower.increaseFollowingCount();
+      following.increaseFollowerCount();
+      userRepository.save(follower);
+      userRepository.save(following);
       followRepository.save(follow);
     } catch (DataIntegrityViolationException e) {
       throw new CustomException(ErrorCode.ALREADY_FOLLOWING);
@@ -40,6 +44,10 @@ public class FollowService {
     Follow follow = followRepository.findByFollowerAndFollowing(follower, following)
         .orElseThrow(() -> new CustomException(ErrorCode.NO_SUCH_FOLLOWERSHIP));
 
+    follower.decreaseFollowingCount();
+    following.decreaseFollowerCount();
+    userRepository.save(follower);
+    userRepository.save(following);
     followRepository.delete(follow);
   }
 }

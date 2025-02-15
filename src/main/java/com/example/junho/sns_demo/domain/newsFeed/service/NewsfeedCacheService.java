@@ -30,7 +30,7 @@ public class NewsfeedCacheService {
     // 리스트 길이 제한 (오래된 게시글 삭제)
     redisTemplate.opsForList().trim(key, 0, MAX_FEED_SIZE - 1);
 
-    // 캐시에 TTL 설정
+    // 캐시 TTL (시간 단위)
     redisTemplate.expire(key, CACHE_TTL, TimeUnit.HOURS);
   }
   /**
@@ -45,7 +45,7 @@ public class NewsfeedCacheService {
     // 리스트 길이 제한 (오래된 게시글 삭제)
     redisTemplate.opsForList().trim(key, 0, MAX_FEED_SIZE - 1);
 
-    // 캐시에 TTL 설정
+    // 캐시 TTL (시간 단위)
     redisTemplate.expire(key, CACHE_TTL, TimeUnit.HOURS);
   }
 
@@ -63,21 +63,6 @@ public class NewsfeedCacheService {
   public boolean hasCachedPosts(Long userId) {
     String key = "userFeed:" + userId;
     return Boolean.TRUE.equals(redisTemplate.hasKey(key));
-  }
-
-  /**
-   * 특정 유저의 캐시 삭제
-   */
-  public void clearUserCache(Long userId) {
-    String key = "userFeed:" + userId;
-    redisTemplate.delete(key);
-  }
-
-  public void removePostFromCache(Long userId, Long postId) {
-    String key = "userFeed:" + userId;
-
-    // 캐시에서 특정 게시글 ID 제거
-    redisTemplate.opsForList().remove(key, 0, postId.toString());
   }
 
 }

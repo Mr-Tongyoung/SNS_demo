@@ -7,6 +7,9 @@ public record UserResponseDto(
     Long id,
     String username,
     String email,
-    String role) {
+    String role,
+    int followerCount,
+    int followingCount,
+    Boolean isCeleb) {
 
 }

@@ -2,6 +2,7 @@ package com.example.junho.sns_demo.domain.user.controller;
 
 import com.example.junho.sns_demo.domain.user.domain.User;
 import com.example.junho.sns_demo.domain.user.service.FollowService;
+import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,16 +21,17 @@ public class FollowController {
   private final FollowService followService;
 
   @PostMapping
-  public ResponseEntity<String> follow(@RequestParam Long followerId,
-      @RequestParam Long followingId) {
-    followService.follow(followerId, followingId);
+  public ResponseEntity<String> follow(@AuthenticationPrincipal
+      CustomUserDetails customUserDetails, @RequestParam Long followingId) {
+    followService.follow(customUserDetails.getId(), followingId);
     return ResponseEntity.ok("Followed successfully");
   }
 
   @DeleteMapping("/unfollow")
-  public ResponseEntity<String> unfollow(@RequestParam Long followerId,
+  public ResponseEntity<String> unfollow(@AuthenticationPrincipal
+  CustomUserDetails customUserDetails,
       @RequestParam Long followingId) {
-    followService.unfollow(followerId, followingId);
+    followService.unfollow(customUserDetails.getId(), followingId);
     return ResponseEntity.ok("Unfollowed successfully");
   }
 }

@@ -3,6 +3,7 @@ package com.example.junho.sns_demo.domain.user.domain;
 import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.global.exception.CustomException;
 import com.example.junho.sns_demo.global.exception.ErrorCode;
+import com.example.junho.sns_demo.global.util.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +32,7 @@ import lombok.Setter;
 @Table(name = "follows", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"follower_id", "following_id"})
 })
-public class Follow {
+public class Follow extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -59,6 +59,8 @@ public class SecurityConfig {
                 "/follow/**",
                 "/post/**",
                 "/newsfeed/**",
+                "/running/**",
+                "/ranking/**",
                 "/api/s3/**"
             ).permitAll() // Swagger 및 관련 리소스 허용
 //            .requestMatchers("/post/create").hasRole("USER")
