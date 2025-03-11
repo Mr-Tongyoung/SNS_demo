@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: SNS_demo
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/SNS_DB
+    username: ${DB_USER_NAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  jwt:
+    expiration_time: 86400000
+    secret: ${JWT_SECRET_TOKEN}
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+    elasticsearch:
+      rest:
+        uris: http://elasticsearch:9200
+        username: elastic
+        password: 5olA9vZrjK6y9aRD1b*f
+#        ssl:
+#          trust-store: /Users/junhokim/elasticsearch-8.17.0/config/certs/http.p12
+#          trust-store-password: 0qAWfRAeTdC0uFn4AMr4Ug
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      retries: 3
+      acks: all
+      properties:
+        enable.idempotence: true
+    consumer:
+      group-id: running-service-group
+      auto-offset-reset: earliest
+      properties:
+        isolation.level: read_committed
+
+cloud:
+  aws:
+    s3:
+      bucket: mysns-demo-bucket
+    sqs:
+      queue-name: "NewsfeedCacheQueue"
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}

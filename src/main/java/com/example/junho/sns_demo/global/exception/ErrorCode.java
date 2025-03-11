@@ -15,6 +15,8 @@ public enum ErrorCode {
 
   ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
 
+  LOGIN(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),
+
 
   // USER
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),

@@ -31,15 +31,18 @@ public class Post extends BaseTimeEntity {
 
   private String content;
 
+  @Builder.Default
   private int likes = 0;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
+  @Builder.Default
   @ElementCollection
   private Set<Long> likedUsers = new HashSet<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<MediaFile> mediaFiles = new ArrayList<>();
 

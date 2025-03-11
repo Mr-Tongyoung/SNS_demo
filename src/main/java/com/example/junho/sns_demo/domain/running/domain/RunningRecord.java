@@ -1,6 +1,7 @@
 package com.example.junho.sns_demo.domain.running.domain;
 
 import com.example.junho.sns_demo.domain.user.domain.User;
+import com.example.junho.sns_demo.global.util.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RunningRecord {
+public class RunningRecord extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

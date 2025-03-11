@@ -39,15 +39,6 @@ public class PostController {
     return ResponseEntity.ok(postResponseDto);
   }
 
-  @PostMapping(value = "/createPosts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<Void> createPosts(@RequestPart("postRequestDto") PostRequestDto postRequestDto, // JSON 데이터
-      @RequestPart(value = "mediaFile", required = false) List<MultipartFile> mediaFiles,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails)
-      throws IOException {
-    postService.createPosts(postRequestDto, mediaFiles, customUserDetails);
-    return ResponseEntity.ok().build();
-  }
-
   @GetMapping("/get/{postId}")
   public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId){
     PostResponseDto postResponseDto = postService.getPost(postId);

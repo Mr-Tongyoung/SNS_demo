@@ -3,6 +3,8 @@ package com.example.junho.sns_demo.domain.newsFeed.service;
 import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.domain.post.dto.PostResponseDto;
 import com.example.junho.sns_demo.domain.post.repository.PostRepository;
+import com.example.junho.sns_demo.global.exception.CustomException;
+import com.example.junho.sns_demo.global.exception.ErrorCode;
 import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class NewsfeedService {
    * - 캐시 미스: DB에서 유저가 팔로우한 유저들의 게시글 조회 후 캐싱, 인플루언서 게시글 병합 후 정렬하여 반환
    */
   public List<PostResponseDto> getNewsfeed(CustomUserDetails customUserDetails) {
+    if(customUserDetails == null){
+      throw new CustomException(ErrorCode.LOGIN);
+    }
     Long userId = customUserDetails.getId();
     List<Post> allPosts = new ArrayList<>();
 

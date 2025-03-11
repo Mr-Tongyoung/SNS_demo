@@ -109,12 +109,6 @@ public class PostService {
     // 유효한 사용자 확인
     validationService.validateUser(customUserDetails.getId());
 
-    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
-    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
-    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
-    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
-    System.out.println(user.getId() + "의 게시글 추가 api 시작!!!!");
-
     // Post 객체 생성 및 저장
     Post post = postRequestDto.toEntity(user);
     post.setMediaFiles(new ArrayList<>()); // mediaFiles 초기화
@@ -151,14 +145,6 @@ public class PostService {
     savedPost = postRepository.save(savedPost);
 
     return savedPost.toResponseDto();
-  }
-
-  public void createPosts(PostRequestDto postRequestDto,
-      List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
-      throws IOException {
-    for (int i = 0; i < 100; i++) {
-      createNormalUserPost(postRequestDto,mediaFiles,customUserDetails);
-    }
   }
 
   public PostResponseDto getPost(Long id) {

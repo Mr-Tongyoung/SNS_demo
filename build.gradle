@@ -55,6 +55,13 @@ dependencies {
 
     // ElasticSearch
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    //Prometheus
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {

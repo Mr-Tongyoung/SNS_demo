@@ -38,3 +38,8 @@ out/
 
 ### Application.yml ###
 /src/main/resources/application-dev.yml
+/src/main/resources/application.yml
+/src/main/resources/application-docker.yml
+
+/Users/junhokim/Documents/GitHub/SNS_demo/docker-compose.yml
+.env

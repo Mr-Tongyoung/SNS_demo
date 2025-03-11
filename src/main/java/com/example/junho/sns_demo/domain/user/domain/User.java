@@ -39,19 +39,24 @@ public class User extends BaseTimeEntity {
 
   private String role;
 
+  @Builder.Default
   private int followerCount = 0;
 
+  @Builder.Default
   private int followingCount = 0;
 
   private boolean isCeleb;
 
+  @Builder.Default
   @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Follow> followings = new ArrayList<>();
 
+  @Builder.Default
   @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Follow> followers = new ArrayList<>();
 
   // 추가: User가 작성한 Post 리스트
+  @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts = new ArrayList<>();
 

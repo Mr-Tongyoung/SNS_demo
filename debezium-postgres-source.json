@@ -1,0 +1,22 @@
+{
+  "name": "debezium-postgres-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "localhost",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "rlawns1199!",
+    "database.dbname": "sns_db",
+    "database.server.name": "SNS_demo",
+    "topic.prefix": "sns-postgres",
+    "plugin.name": "pgoutput",
+    "slot.name": "debezium_slot",
+    "table.include.list": "public.running_record",
+    "database.history.kafka.bootstrap.servers": "localhost:9092",
+    "database.history.kafka.topic": "schema-changes.sns_db",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false"
+  }
+}

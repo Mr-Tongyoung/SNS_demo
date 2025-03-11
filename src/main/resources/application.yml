@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: SNS_demo
+  config:
+    import: "optional:file:.env[.properties]"
+
+  profiles:
+    active: dev  # Docker 환경을 기본 프로파일로 설정
