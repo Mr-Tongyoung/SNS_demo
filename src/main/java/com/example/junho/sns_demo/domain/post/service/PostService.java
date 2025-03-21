@@ -1,5 +1,6 @@
 package com.example.junho.sns_demo.domain.post.service;
 
+import com.example.junho.sns_demo.domain.newsFeed.service.NewsfeedUpdateService;
 import com.example.junho.sns_demo.global.elasticSearch.ElasticRepository;
 import com.example.junho.sns_demo.global.elasticSearch.PostDocument;
 import com.example.junho.sns_demo.domain.comment.domain.Comment;
@@ -15,9 +16,10 @@ import com.example.junho.sns_demo.domain.user.repository.UserRepository;
 import com.example.junho.sns_demo.global.exception.CustomException;
 import com.example.junho.sns_demo.global.exception.ErrorCode;
 import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
+import com.example.junho.sns_demo.global.kafka.KafkaMessageSender;
 import com.example.junho.sns_demo.global.util.aws.s3.S3Service;
 import com.example.junho.sns_demo.global.util.ValidationService;
-import com.example.junho.sns_demo.global.util.aws.sqs.SqsMessageSender;
+//import com.example.junho.sns_demo.global.util.aws.sqs.SqsMessageSender;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -39,8 +41,11 @@ public class PostService {
   private final UserRepository userRepository;
   private final ElasticRepository elasticRepository;
   private final S3Service s3Service;
-  private final SqsMessageSender sqsMessageSender;
+//  private final SqsMessageSender sqsMessageSender;
+  private final KafkaMessageSender kafkaMessageSender;
+  private final NewsfeedUpdateService newsfeedUpdateService;
 
+  @Transactional
   public PostResponseDto createPost(PostRequestDto postRequestDto,
       List<MultipartFile> mediaFiles, CustomUserDetails customUserDetails)
       throws IOException {
@@ -96,8 +101,11 @@ public class PostService {
     savedPost = postRepository.save(savedPost);
 
     // SQS에 메시지 전송
-    sqsMessageSender.sendMessage(savedPost.getId().toString());
+//    sqsMessageSender.sendMessage(savedPost.getId().toString());
+    // ✅ Kafka 전송
+    kafkaMessageSender.sendPostEvent(savedPost.getId().toString());
 
+//    newsfeedUpdateService.updateFollowerCaches(savedPost.getUser().getId(), savedPost.getId());
     return savedPost.toResponseDto();
   }
 

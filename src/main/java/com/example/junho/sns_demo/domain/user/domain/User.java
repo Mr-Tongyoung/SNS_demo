@@ -81,7 +81,7 @@ public class User extends BaseTimeEntity {
   }
 
   private void updateCelebrityStatus() {
-    this.isCeleb = this.followerCount >= 5;
+    this.isCeleb = this.followerCount >= 100000;
   }
 
 

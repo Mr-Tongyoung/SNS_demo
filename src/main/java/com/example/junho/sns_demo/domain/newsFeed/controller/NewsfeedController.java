@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,4 +25,21 @@ public class NewsfeedController {
     return ResponseEntity.ok(postResponseDtos);
   }
 
+  @GetMapping("/withoutJWT")
+  public ResponseEntity<List<PostResponseDto>> getNewsfeedWithoutJWT(@RequestParam Long userId) {
+    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedWithoutJWT(userId);
+    return ResponseEntity.ok(postResponseDtos);
+  }
+
+  @GetMapping("/withoutFJ")
+  public ResponseEntity<List<PostResponseDto>> getNewsfeedWithoutFJ(@RequestParam Long userId) {
+    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedWithoutFJ(userId);
+    return ResponseEntity.ok(postResponseDtos);
+  }
+
+  @GetMapping("/withoutCache")
+  public ResponseEntity<List<PostResponseDto>> getNewsfeedWithoutCache(@RequestParam Long userId) {
+    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedWithoutCache(userId);
+    return ResponseEntity.ok(postResponseDtos);
+  }
 }

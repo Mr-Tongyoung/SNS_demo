@@ -27,6 +27,12 @@ public class FollowController {
     return ResponseEntity.ok("Followed successfully");
   }
 
+  @PostMapping("/followById")
+  public ResponseEntity<String> followById(@RequestParam Long followingId) {
+    followService.followByIdForUsersInRange(followingId);
+    return ResponseEntity.ok("Followed successfully");
+  }
+
   @DeleteMapping("/unfollow")
   public ResponseEntity<String> unfollow(@AuthenticationPrincipal
   CustomUserDetails customUserDetails,

@@ -33,4 +33,10 @@ public class RunningController {
     RunningRecord runningRecord = runningService.endRunning(userId);
     return ResponseEntity.ok(runningRecord);
   }
+
+  @PostMapping("/test")
+  public ResponseEntity<RunningRecord> endRunning() {
+    RunningRecord runningRecord = runningService.startAndEndRunningWithDelayForRandomUser();
+    return ResponseEntity.ok(runningRecord);
+  }
 }

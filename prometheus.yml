@@ -6,3 +6,8 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['host.docker.internal:8080']  # 로컬에서 실행 중인 Spring Boot API
+
+  - job_name: 'kafka-broker'
+    metrics_path: '/'
+    static_configs:
+      - targets: ['localhost:7071']  # JMX Exporter가 실행 중인 포트

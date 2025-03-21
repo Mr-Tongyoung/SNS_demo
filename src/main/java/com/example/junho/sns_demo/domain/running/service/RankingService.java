@@ -40,7 +40,13 @@ public class RankingService {
     if (rankings == null) return Collections.emptyList();
 
     return rankings.stream()
-        .map(entry -> new RankingEntry(Long.parseLong(entry.getValue()), entry.getScore().intValue()))
+        .map(entry -> {
+          Long userId = Long.parseLong(entry.getValue());
+          Double score = entry.getScore();
+          Long rank = redisTemplate.opsForZSet().reverseRank(leaderboardKey, userId.toString());
+
+          return new RankingEntry(userId, score.intValue(), rank != null ? rank.intValue() + 1 : -1);
+        })
         .collect(Collectors.toList());
   }
 
