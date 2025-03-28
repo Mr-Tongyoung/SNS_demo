@@ -27,19 +27,19 @@ public class NewsfeedController {
 
   @GetMapping("/withoutJWT")
   public ResponseEntity<List<PostResponseDto>> getNewsfeedWithoutJWT(@RequestParam Long userId) {
-    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedWithoutJWT(userId);
+    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedNoJWT(userId);
     return ResponseEntity.ok(postResponseDtos);
   }
 
   @GetMapping("/withoutFJ")
   public ResponseEntity<List<PostResponseDto>> getNewsfeedWithoutFJ(@RequestParam Long userId) {
-    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedWithoutFJ(userId);
+    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedNoCacheNoFJ(userId);
     return ResponseEntity.ok(postResponseDtos);
   }
 
   @GetMapping("/withoutCache")
   public ResponseEntity<List<PostResponseDto>> getNewsfeedWithoutCache(@RequestParam Long userId) {
-    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedWithoutCache(userId);
+    List<PostResponseDto> postResponseDtos = newsfeedService.getNewsfeedNoCache(userId);
     return ResponseEntity.ok(postResponseDtos);
   }
 }

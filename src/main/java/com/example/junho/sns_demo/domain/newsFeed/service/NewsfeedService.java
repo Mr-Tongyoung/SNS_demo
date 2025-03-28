@@ -4,6 +4,7 @@ import com.example.junho.sns_demo.domain.post.domain.MediaFile;
 import com.example.junho.sns_demo.domain.post.domain.Post;
 import com.example.junho.sns_demo.domain.post.dto.PostResponseDto;
 import com.example.junho.sns_demo.domain.post.repository.PostRepository;
+import com.example.junho.sns_demo.domain.user.repository.FollowRepository;
 import com.example.junho.sns_demo.global.exception.CustomException;
 import com.example.junho.sns_demo.global.exception.ErrorCode;
 import com.example.junho.sns_demo.global.jwt.CustomUserDetails;
@@ -11,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,174 +23,164 @@ import org.springframework.transaction.annotation.Transactional;
 public class NewsfeedService {
 
   private final PostRepository postRepository;
+  private final FollowRepository followRepository;
   private final NewsfeedCacheService newsfeedCacheService;
 
-  /**
-   * 뉴스피드 불러오기
-   * - 캐시 히트: 캐시된 게시글 + DB에서 조회한 인플루언서 게시글 병합 후 정렬하여 반환
-   * - 캐시 미스: DB에서 유저가 팔로우한 유저들의 게시글 조회 후 캐싱, 인플루언서 게시글 병합 후 정렬하여 반환
-   */
-  @Transactional(readOnly = true)  // 트랜잭션을 유지하여 Lazy Loading 허용
-  public List<PostResponseDto> getNewsfeed(CustomUserDetails customUserDetails) {
-    if(customUserDetails == null){
+  @Transactional(readOnly = true)
+  public List<PostResponseDto> getNewsfeed(
+      CustomUserDetails customUserDetails) {
+    if (customUserDetails == null) {
       throw new CustomException(ErrorCode.LOGIN);
     }
-    Long userId = customUserDetails.getId();
-    List<Post> allPosts = new ArrayList<>();
-    Pageable pageable = PageRequest.of(0, 100);
-
-    if (newsfeedCacheService.hasCachedPosts(userId)) {
-      System.out.println("***Cache hit for user*** " + userId);
-
-      // 캐시에서 유저의 뉴스피드 게시글 ID 리스트 가져오기
-      List<String> cachedPostIds = newsfeedCacheService.getCachedPosts(userId);
-
-      // 캐시에 저장된 게시글 ID를 기반으로 DB에서 조회
-      List<Post> cachedPosts = postRepository.findAllById(
-          cachedPostIds.stream().map(Long::valueOf).toList()
-      );
-
-      // 캐시에 저장된 ID 순서대로 정렬
-      Map<Long, Post> postMap = cachedPosts.stream()
-          .collect(Collectors.toMap(Post::getId, post -> post));
-
-      List<Post> sortedCachedPosts = cachedPostIds.stream()
-          .map(Long::valueOf)
-          .map(postMap::get) // 캐시 순서대로 정렬
-          .filter(Objects::nonNull) // 존재하지 않는 ID 필터링
-          .toList();
-
-      allPosts.addAll(sortedCachedPosts);
-    } else {
-      System.out.println("***Cache miss for user*** " + userId);
-
-      // 캐시에 없는 경우 DB에서 유저가 팔로우한 유저들의 최신 피드 조회 후 캐시에 저장
-      List<Post> freshPosts = postRepository.findFeedPostsWithFileMediaByUserId(userId, pageable);
-
-
-      // 캐시에 저장
-      freshPosts.forEach(post -> newsfeedCacheService.addPostToCache(userId, post.getId()));
-
-      allPosts.addAll(freshPosts);
-    }
-
-    // 인플루언서 게시글을 따로 조회
-    List<Post> influencerPosts = postRepository.findInfluencerPosts(userId);
-    allPosts.addAll(influencerPosts);
-
-    // 최신 게시글 순으로 정렬 후 반환
-    return allPosts.stream()
-        .sorted(Comparator.comparing(Post::getCreatedAt).reversed()) // 최신순 정렬
-        .map(Post::toResponseDto)
-        .toList();
+    return getNewsfeedNoJWT(customUserDetails.getId());
   }
 
-  @Transactional(readOnly = true)  // 트랜잭션을 유지하여 Lazy Loading 허용
-  public List<PostResponseDto> getNewsfeedWithoutJWT(Long userId) {
-    List<Post> allPosts = new ArrayList<>();
-    Pageable pageable = PageRequest.of(0, 30);
-
-    if (newsfeedCacheService.hasCachedPosts(userId)) {
-      System.out.println("***Cache hit for user*** " + userId);
-
-      // 캐시에서 유저의 뉴스피드 게시글 ID 리스트 가져오기
-      List<String> cachedPostIds = newsfeedCacheService.getCachedPosts(userId);
-
-      // 캐시에 저장된 게시글 ID를 기반으로 DB에서 조회
-      List<Post> cachedPosts = postRepository.findAllById(
-          cachedPostIds.stream().map(Long::valueOf).toList()
-      );
-
-      // 캐시에 저장된 ID 순서대로 정렬
-      Map<Long, Post> postMap = cachedPosts.stream()
-          .collect(Collectors.toMap(Post::getId, post -> post));
-
-      List<Post> sortedCachedPosts = cachedPostIds.stream()
-          .map(Long::valueOf)
-          .map(postMap::get) // 캐시 순서대로 정렬
-          .filter(Objects::nonNull) // 존재하지 않는 ID 필터링
-          .toList();
-
-      allPosts.addAll(sortedCachedPosts);
-    } else {
-      System.out.println("***Cache miss for user*** " + userId);
-
-      // 캐시에 없는 경우 DB에서 유저가 팔로우한 유저들의 최신 피드 조회 후 캐시에 저장
-      List<Post> freshPosts = postRepository.findFeedPostsWithFileMediaByUserId(userId, pageable);
-
-      // 캐시에 저장
-      freshPosts.forEach(post -> newsfeedCacheService.addPostToCache(userId, post.getId()));
-
-      allPosts.addAll(freshPosts);
-    }
-
-    // 인플루언서 게시글을 따로 조회
-    List<Post> influencerPosts = postRepository.findInfluencerPosts(userId);
-    allPosts.addAll(influencerPosts);
-
-    // 최신 게시글 순으로 정렬 후 반환
-    return allPosts.stream()
-        .sorted(Comparator.comparing(Post::getCreatedAt).reversed()) // 최신순 정렬
-        .map(Post::toResponseDto)
-        .toList();
-  }
-
-
-  /**
-   * 1️⃣ 캐시 없이, 페치 조인을 사용하지 않고 조회 (N+1 발생)
-   */
   @Transactional(readOnly = true)
-  public List<PostResponseDto> getNewsfeedWithoutFJ(Long userId) {
-    List<Post> allPosts = new ArrayList<>();
+  public List<PostResponseDto> getNewsfeedNoJWT(Long userId) {
+    List<PostResponseDto> allPosts;
     Pageable pageable = PageRequest.of(0, 30);
 
-    System.out.println("***Fetching posts without Fetch Join (N+1 risk)*** for user " + userId);
+    List<PostResponseDto> cached = newsfeedCacheService.getCachedNewsfeed(
+        userId);
+    if (cached != null) {
+      System.out.println("***Cache hit for user*** " + userId);
+      allPosts = new ArrayList<>(cached);
+    } else {
+      System.out.println("***Cache miss for user*** " + userId);
 
-    // 페치 조인을 사용하지 않고 게시글 조회 (N+1 발생)
-    List<Post> freshPosts = postRepository.findFeedPostsByUserIdWithoutFetchJoin(userId, pageable);
+      // 1. User + Post Fetch Join
+      List<Post> freshPosts = postRepository.findPostsWithUserAndFilterByFollow(
+          userId, pageable);
 
-//    // Lazy Loading으로 인해 미디어 파일을 조회할 때 추가 쿼리 발생 (N+1)
-//    freshPosts.forEach(post -> post.getMediaFiles().toString());
-    // 🛠 Lazy Loading 강제 실행 → 명시적으로 미디어 파일을 가져오기 위해 직접 쿼리 실행
+      // 2. MediaFile 일괄 조회
+      List<Long> postIds = freshPosts.stream()
+          .map(Post::getId)
+          .toList();
+      List<MediaFile> mediaFiles = postRepository.findMediaFilesByPostIds(
+          postIds);
+
+      // 3. PostId 기준으로 그룹핑
+      Map<Long, List<MediaFile>> mediaMap = mediaFiles.stream()
+          .collect(Collectors.groupingBy(m -> m.getPost().getId()));
+
+      // 4. Post에 MediaFile 수동 주입
+      for (Post post : freshPosts) {
+        post.setMediaFiles(mediaMap.getOrDefault(post.getId(), List.of()));
+      }
+
+      // 5. DTO 변환
+      allPosts = freshPosts.stream()
+          .map(Post::toResponseDto)
+          .collect(Collectors.toList());
+
+      // 6. 캐시 저장
+      newsfeedCacheService.cacheNewsfeed(userId, allPosts);
+    }
+
+    // 7. 인플루언서 포스트 추가
+    List<Post> influencerPosts = postRepository.findInfluencerPosts(userId);
+    List<PostResponseDto> influencerDtos = influencerPosts.stream()
+        .map(Post::toResponseDto)
+        .toList();
+
+    allPosts.addAll(influencerDtos);
+
+    // 8. 최종 정렬
+    return allPosts.stream()
+        .sorted(Comparator.comparing(PostResponseDto::createdDate).reversed())
+        .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public List<PostResponseDto> getNewsfeedNoCache(Long userId) {
+    Pageable pageable = PageRequest.of(0, 30);
+    System.out.println("***Fetching posts with Fetch Join (optimized) but without Cache*** for user " + userId);
+
+    // 1. User + Post Fetch Join
+    List<Post> freshPosts = postRepository.findPostsWithUserAndFilterByFollow(userId, pageable);
+
+    // 2. Post ID 수집 → MediaFile IN 조회
+    List<Long> postIds = freshPosts.stream()
+        .map(Post::getId)
+        .toList();
+
+    // 3. MediaFile 일괄 조회
+    List<MediaFile> mediaFiles = postRepository.findMediaFilesByPostIds(postIds);
+
+    // 4. MediaFile → PostId 기준으로 그룹핑
+    Map<Long, List<MediaFile>> mediaMap = mediaFiles.stream()
+        .collect(Collectors.groupingBy(m -> m.getPost().getId()));
+
+    // 5. Post에 MediaFile 수동 주입
     for (Post post : freshPosts) {
-      List<MediaFile> mediaFiles = postRepository.findMediaFilesByPostId(post.getId());
-      post.setMediaFiles(mediaFiles); // 조회된 데이터를 수동으로 세팅
+      post.setMediaFiles(mediaMap.getOrDefault(post.getId(), List.of()));
     }
 
-    allPosts.addAll(freshPosts);
-
-    // 인플루언서 게시글 조회 (이 쿼리는 페치 조인 가능)
-    List<Post> influencerPosts = postRepository.findInfluencerPosts(userId);
-    allPosts.addAll(influencerPosts);
-
-    return allPosts.stream()
-        .sorted(Comparator.comparing(Post::getCreatedAt).reversed()) // 최신순 정렬
+    // 6. Post → Dto 변환
+    List<PostResponseDto> allPosts = freshPosts.stream()
         .map(Post::toResponseDto)
+        .collect(Collectors.toList());
+
+    // 7. 인플루언서 포스트 추가
+    List<Post> influencerPosts = postRepository.findInfluencerPosts(userId);
+    List<PostResponseDto> influencerDtos = influencerPosts.stream()
+        .map(Post::toResponseDto)
+        .toList();
+
+    allPosts.addAll(influencerDtos);
+
+    // 8. 최종 정렬
+    return allPosts.stream()
+        .sorted(Comparator.comparing(PostResponseDto::createdDate).reversed())
         .toList();
   }
 
-  /**
-   * 2️⃣ 페치 조인은 유지하지만 캐시 없이 조회
-   */
   @Transactional(readOnly = true)
-  public List<PostResponseDto> getNewsfeedWithoutCache(Long userId) {
-    List<Post> allPosts = new ArrayList<>();
+  public List<PostResponseDto> getNewsfeedNoCacheNoFJ(Long userId) {
     Pageable pageable = PageRequest.of(0, 30);
+    System.out.println(
+        "***Fetching posts without Fetch Join (step-by-step, N+1)*** for user "
+            + userId);
 
-    System.out.println("***Fetching posts with Fetch Join but without Cache*** for user " + userId);
+    // 1. 팔로우한 유저 ID들 조회
+    List<Long> followingIds = followRepository.findFollowingIdsByUserId(userId);
+    if (followingIds.isEmpty()) {
+      return List.of();
+    }
 
-    // 페치 조인을 사용하여 N+1 문제 해결, 하지만 캐시는 사용하지 않음
-    List<Post> freshPosts = postRepository.findFeedPostsWithFileMediaByUserId(userId, pageable);
+    // 2. 팔로우한 유저들의 포스트 가져오기
+    List<Post> freshPosts = new ArrayList<>();
+    for (Long followingId : followingIds) {
+      freshPosts.addAll(
+          postRepository.findPostsByUserId(followingId, pageable));
+    }
 
-    allPosts.addAll(freshPosts);
+    // 3. 각 포스트에 대해 미디어파일 개별 조회
+    for (Post post : freshPosts) {
+      List<MediaFile> mediaFiles = postRepository.findMediaFilesByPostId(
+          post.getId());
+      post.setMediaFiles(mediaFiles);  // setter로 N+1 유도
+    }
 
-    // 인플루언서 게시글 조회 (페치 조인 사용 가능)
+    // 4. DTO로 변환
+    List<PostResponseDto> allPosts = freshPosts.stream()
+        .map(Post::toResponseDto)
+        .collect(Collectors.toList());
+
+    // 5. 인플루언서 포스트 추가
     List<Post> influencerPosts = postRepository.findInfluencerPosts(userId);
-    allPosts.addAll(influencerPosts);
-
-    return allPosts.stream()
-        .sorted(Comparator.comparing(Post::getCreatedAt).reversed()) // 최신순 정렬
+    List<PostResponseDto> influencerDtos = influencerPosts.stream()
         .map(Post::toResponseDto)
         .toList();
+
+    allPosts.addAll(influencerDtos);
+
+    // 6. 정렬 후 상위 30개 리턴
+    return allPosts.stream()
+        .sorted(Comparator.comparing(PostResponseDto::createdDate).reversed())
+        .limit(30)
+        .toList();
   }
+
+
 }

@@ -41,9 +41,7 @@ public class PostService {
   private final UserRepository userRepository;
   private final ElasticRepository elasticRepository;
   private final S3Service s3Service;
-//  private final SqsMessageSender sqsMessageSender;
   private final KafkaMessageSender kafkaMessageSender;
-  private final NewsfeedUpdateService newsfeedUpdateService;
 
   @Transactional
   public PostResponseDto createPost(PostRequestDto postRequestDto,
@@ -100,12 +98,8 @@ public class PostService {
 
     savedPost = postRepository.save(savedPost);
 
-    // SQS에 메시지 전송
-//    sqsMessageSender.sendMessage(savedPost.getId().toString());
     // ✅ Kafka 전송
-    kafkaMessageSender.sendPostEvent(savedPost.getId().toString());
-
-//    newsfeedUpdateService.updateFollowerCaches(savedPost.getUser().getId(), savedPost.getId());
+    kafkaMessageSender.sendPostEvent(savedPost.getUser().getId(), savedPost.getId());
     return savedPost.toResponseDto();
   }
 
